@@ -6,9 +6,7 @@ const port = process.env.PORT || 3000;
 
 app.get('/', async function(req, res) {
     if(req.query.q){
-        const browser = await puppeteer.launch({
-            executablePath: '/workspace/node_modules/puppeteer/.local-chromium/linux-938248/chrome-linux/chrome'
-        });
+        const browser = await puppeteer.launch();
         const page = await browser.newPage();
         await page.goto("https://www.nummerplade.net/nummerplade/" + req.query.q + ".html");
         const maerke = await page.waitForSelector("#maerke");
