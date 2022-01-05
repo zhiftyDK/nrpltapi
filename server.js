@@ -7,10 +7,7 @@ const port = process.env.PORT || 3000;
 app.get('/', async function(req, res) {
     if(req.query.q){
         const browser = await puppeteer.launch({
-            'args' : [
-              '--no-sandbox',
-              '--disable-setuid-sandbox'
-            ]
+            executablePath: '/usr/bin/chromium-browser'
         });
         const page = await browser.newPage();
         await page.goto("https://www.nummerplade.net/nummerplade/" + req.query.q + ".html");
