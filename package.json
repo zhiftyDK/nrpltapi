@@ -11,9 +11,10 @@
     "author": "",
     "license": "ISC",
     "dependencies": {
+        "cors": "^2.8.5",
         "crypto": "^1.0.1",
-        "express": "^4.17.2",
-        "puppeteer": "^13.0.1"
+        "jsdom": "^19.0.0",
+        "request": "^2.88.2"
     },
     "engines": {
         "node": "16.13.1"

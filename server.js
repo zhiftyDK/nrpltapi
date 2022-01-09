@@ -1,31 +1,33 @@
-const express = require("express")
-const puppeteer = require("puppeteer");
 const crypto = require("crypto");
+const request = require('request')
+const { JSDOM } = require("jsdom");
+const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
+var corsOptions = {
+    origin: '*',
+    methods: "GET"
+}
+
+app.use(cors(corsOptions));
+
 app.get('/', async function(req, res) {
     if(req.query.q){
-        const browser = await puppeteer.launch();
-        const page = await browser.newPage();
-        await page.goto("https://www.nummerplade.net/nummerplade/" + req.query.q + ".html");
-        const maerke = await page.waitForSelector("#maerke");
-        const model = await page.waitForSelector("#model");
-        const variant = await page.waitForSelector("#variant");
-        const type = await page.waitForSelector("#art");
-        const anvendelse = await page.waitForSelector("#anvendelse");
-        const nummerplade = await page.waitForSelector("#regnr");
-        const stelnr = await page.waitForSelector("#stelnr");
-        res.send({
-            mærke: await maerke.evaluate(el => el.textContent),
-            model: await model.evaluate(el => el.textContent),
-            variant: await variant.evaluate(el => el.textContent),
-            type: await type.evaluate(el => el.textContent),
-            anvendelse: await anvendelse.evaluate(el => el.textContent),
-            nummerplade: await nummerplade.evaluate(el => el.textContent),
-            stelnummer: await stelnr.evaluate(el => el.textContent),
-        });
-        await browser.close();
+        request("https://www.nummerplade.net/nummerplade/" + req.query.q + ".html", (error, response, body) => {
+            if (error) return console.log(error);
+            let dom = new JSDOM(body);
+            let result = {
+                mærke: dom.window.document.querySelector("#maerke").textContent,
+                model: dom.window.document.querySelector("#model").textContent,
+                variant: dom.window.document.querySelector("#variant").textContent,
+                type: dom.window.document.querySelector("#art").textContent,
+                anvendelse: dom.window.document.querySelector("#anvendelse").textContent,
+                nummerplade: dom.window.document.querySelector("#regnr").textContent,
+                stelnr: dom.window.document.querySelector("#stelnr").textContent
+            }
+            res.send(result);
+        })
     }
     else {
         res.send({
@@ -33,9 +35,6 @@ app.get('/', async function(req, res) {
             version: "1.0.0",
             serverID: crypto.randomUUID()
         })
-    }
-    async function carInfo(plate) {
-        
     }
 })
 
